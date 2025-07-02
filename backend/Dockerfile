@@ -1,5 +1,5 @@
 FROM gradle:jdk17-alpine AS BUILD_STAGE
-COPY --chown=gradle:gradle . /home/gradle
+COPY --chown=gradle:gradle ./backend /home/gradle
 RUN gradle build -x test
 
 FROM openjdk:17-oracle
