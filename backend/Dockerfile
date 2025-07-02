@@ -1,6 +1,6 @@
 FROM gradle:jdk17-alpine AS BUILD_STAGE
 COPY --chown=gradle:gradle . /home/gradle
-RUN gradle build -x test || return 1
+RUN gradle build -x test
 
 FROM openjdk:17-oracle
 ENV ARTIFACT_NAME=demo-0.0.1-SNAPSHOT.jar
