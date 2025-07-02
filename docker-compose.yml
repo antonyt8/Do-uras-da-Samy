@@ -1,0 +1,30 @@
+version: "3.8"
+services:
+  db:
+    image: postgres:latest
+    environment:
+      - POSTGRES_DB=confeitaria
+      - POSTGRES_USER=confeiteiro
+      - POSTGRES_PASSWORD=minhasenha
+    ports:
+      - "5432:5432"
+    networks:
+      - app-network
+  backend:
+    build: ./backend
+    ports:
+      - "8080:8080"
+    networks:
+      - app-network
+    depends_on:
+      - db
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:3000"
+    networks:
+      - app-network
+
+networks:
+  app-network:

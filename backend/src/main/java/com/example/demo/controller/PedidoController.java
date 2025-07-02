@@ -2,17 +2,17 @@ package com.example.demo.controller;
 
 import com.example.demo.dto.PedidoDTO;
 import com.example.demo.service.PedidoService;
+import java.util.List;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.Optional;
-
 @RestController
 @RequestMapping("/api/pedidos")
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "*")
 public class PedidoController {
+
     @Autowired
     private PedidoService pedidoService;
 
@@ -24,23 +24,33 @@ public class PedidoController {
     @GetMapping("/{id}")
     public ResponseEntity<PedidoDTO> getPedidoById(@PathVariable Long id) {
         Optional<PedidoDTO> pedido = pedidoService.findById(id);
-        return pedido.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
+        return pedido
+            .map(ResponseEntity::ok)
+            .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping
-    public ResponseEntity<PedidoDTO> createPedido(@RequestBody PedidoDTO pedidoDTO) {
+    public ResponseEntity<PedidoDTO> createPedido(
+        @RequestBody PedidoDTO pedidoDTO
+    ) {
         PedidoDTO created = pedidoService.save(pedidoDTO);
         return ResponseEntity.ok(created);
     }
 
     @PutMapping("/{id}/status")
-    public ResponseEntity<PedidoDTO> updateStatus(@PathVariable Long id, @RequestParam String status) {
+    public ResponseEntity<PedidoDTO> updateStatus(
+        @PathVariable Long id,
+        @RequestParam String status
+    ) {
         PedidoDTO updated = pedidoService.updateStatus(id, status);
         return ResponseEntity.ok(updated);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<PedidoDTO> updatePedido(@PathVariable Long id, @RequestBody PedidoDTO pedidoDTO) {
+    public ResponseEntity<PedidoDTO> updatePedido(
+        @PathVariable Long id,
+        @RequestBody PedidoDTO pedidoDTO
+    ) {
         try {
             PedidoDTO updated = pedidoService.update(id, pedidoDTO);
             return ResponseEntity.ok(updated);
@@ -54,4 +64,4 @@ public class PedidoController {
         pedidoService.deleteById(id);
         return ResponseEntity.noContent().build();
     }
-} 
+}

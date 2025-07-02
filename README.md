@@ -191,4 +191,4 @@ O sistema já vem com dados de exemplo incluindo:
 
 ## 📝 Licença
 
-Este projeto é de uso educacional e comercial. 
+Este projeto é de uso educacional e comercial.

@@ -21,6 +21,7 @@ interface Props {
 
 export default function PedidoForm({ onCancel, onSuccess, pedido }: Props) {
   const [nomeCliente, setNomeCliente] = useState(pedido?.nomeCliente || "");
+
   const [produtos, setProdutos] = useState<Produto[]>([]);
   const [itens, setItens] = useState<PedidoItem[]>(pedido?.itens ? pedido.itens.map((i: any) => ({ produtoId: i.produtoId, quantidade: i.quantidade })) : []);
   const [loading, setLoading] = useState(false);
@@ -28,7 +29,7 @@ export default function PedidoForm({ onCancel, onSuccess, pedido }: Props) {
   const [success, setSuccess] = useState("");
 
   useEffect(() => {
-    authFetch("http://localhost:8080/api/produtos")
+    authFetch("https://sammy-back.onrender.com/api/produtos")
       .then((res) => res.json())
       .then((data) => setProdutos(data));
   }, []);
@@ -37,6 +38,7 @@ export default function PedidoForm({ onCancel, onSuccess, pedido }: Props) {
     if (pedido) {
       setNomeCliente(pedido.nomeCliente || "");
       setItens(pedido.itens ? pedido.itens.map((i: any) => ({ produtoId: i.produtoId, quantidade: i.quantidade })) : []);
+
     }
   }, [pedido]);
 
@@ -45,7 +47,9 @@ export default function PedidoForm({ onCancel, onSuccess, pedido }: Props) {
   };
 
   const updateItem = (idx: number, field: string, value: any) => {
-    setItens(itens.map((item, i) => i === idx ? { ...item, [field]: value } : item));
+    setItens(
+      itens.map((item, i) => (i === idx ? { ...item, [field]: value } : item)),
+    );
   };
 
   const removeItem = (idx: number) => {
@@ -81,27 +85,32 @@ export default function PedidoForm({ onCancel, onSuccess, pedido }: Props) {
     const body = {
       nomeCliente,
       itens: itens.map(i => ({ produtoId: i.produtoId, quantidade: Number(i.quantidade) }))
+
     };
 
     try {
       let res;
       if (pedido && pedido.id) {
-        res = await authFetch(`http://localhost:8080/api/pedidos/${pedido.id}`, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(body)
-        });
+        res = await authFetch(
+          `https://sammy-back.onrender.com/api/pedidos/${pedido.id}`,
+          {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(body),
+          },
+        );
       } else {
-        res = await authFetch("http://localhost:8080/api/pedidos", {
+        res = await authFetch("https://sammy-back.onrender.com/api/pedidos", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(body)
+          body: JSON.stringify(body),
         });
       }
 
       if (!res.ok) throw new Error("Erro ao salvar pedido");
 
       setSuccess(pedido ? "Pedido atualizado com sucesso!" : "Pedido criado com sucesso!");
+
       setNomeCliente("");
       setItens([]);
       setTimeout(() => {
@@ -124,7 +133,7 @@ export default function PedidoForm({ onCancel, onSuccess, pedido }: Props) {
         <input
           className="w-full border px-3 py-2 rounded mb-4"
           value={nomeCliente}
-          onChange={e => setNomeCliente(e.target.value)}
+          onChange={(e) => setNomeCliente(e.target.value)}
           required
         />
 
@@ -148,7 +157,9 @@ export default function PedidoForm({ onCancel, onSuccess, pedido }: Props) {
               min={1}
               className="border px-2 py-1 rounded w-20"
               value={item.quantidade}
-              onChange={e => updateItem(idx, "quantidade", Number(e.target.value))}
+              onChange={(e) =>
+                updateItem(idx, "quantidade", Number(e.target.value))
+              }
               required
             />
             <button type="button" onClick={() => removeItem(idx)} className="text-red-500 text-sm">Remover</button>
