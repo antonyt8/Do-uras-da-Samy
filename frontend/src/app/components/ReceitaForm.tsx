@@ -1,12 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 interface Material {
   id: string;
-  nome: string;
+  descricao: string;
+  qtPorcao: number;
   unidade: string;
-  precoUnitario: number;
+  vlPorcao: number
 }
 
 interface ReceitaMaterial {
@@ -17,11 +18,7 @@ interface ReceitaMaterial {
 
 interface Receita {
   id?: string;
-  nome: string;
   descricao: string;
-  instrucoes: string;
-  tempoPreparo: number;
-  rendimento: string;
   materiais: ReceitaMaterial[];
 }
 
@@ -34,11 +31,7 @@ interface ReceitaFormProps {
 
 export default function ReceitaForm({ materiais, onSave, onCancel, receita }: ReceitaFormProps) {
   const [formData, setFormData] = useState<Receita>(receita || {
-    nome: "",
     descricao: "",
-    instrucoes: "",
-    tempoPreparo: 0,
-    rendimento: "",
     materiais: []
   });
 
@@ -48,9 +41,24 @@ export default function ReceitaForm({ materiais, onSave, onCancel, receita }: Re
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
 
+  useEffect(() => {
+    const material = materiais.find((m) => String(m.id) === String(selectedMaterial));
+    if (material) {
+      setUnidade(material.unidade);
+    } else {
+      setUnidade("");
+    }
+  }, [selectedMaterial, materiais]);
+
+
   const handleAddMaterial = () => {
+    console.log("Adding material:", selectedMaterial, quantidade, unidade);
     if (selectedMaterial && quantidade && unidade) {
-      const material = materiais.find(m => m.id === selectedMaterial);
+      console.log(materiais)
+      console.log(selectedMaterial)
+      console.log(materiais.find(m => String(m.id) === String(selectedMaterial)));
+      const material = materiais.find(m => String(m.id) === String(selectedMaterial));
+      console.log("Found material:", material);
       if (material) {
         setFormData(prev => ({
           ...prev,
@@ -78,11 +86,12 @@ export default function ReceitaForm({ materiais, onSave, onCancel, receita }: Re
     e.preventDefault();
     setSuccess("");
     setError("");
-    if (!formData.nome || formData.materiais.length === 0) {
+    if (!formData.descricao || formData.materiais.length === 0) {
       setError("Preencha o nome da receita e adicione pelo menos um material.");
       return;
     }
     try {
+      console.log("Saving receita:", formData);
       onSave(formData);
       setSuccess("Receita salva com sucesso!");
       setTimeout(() => {
@@ -96,9 +105,9 @@ export default function ReceitaForm({ materiais, onSave, onCancel, receita }: Re
 
   const calculateTotalCost = () => {
     return formData.materiais.reduce((total, item) => {
-      const material = materiais.find(m => m.id === item.materialId);
+      const material = materiais.find(m => String(m.id) === String(item.materialId));
       if (material) {
-        return total + (material.precoUnitario * item.quantidade);
+        return total + (material.vlPorcao/material.qtPorcao * item.quantidade);
       }
       return total;
     }, 0);
@@ -136,65 +145,12 @@ export default function ReceitaForm({ materiais, onSave, onCancel, receita }: Re
               <input
                 type="text"
                 required
-                value={formData.nome}
-                onChange={(e) => setFormData(prev => ({ ...prev, nome: e.target.value }))}
+                value={formData.descricao}
+                onChange={(e) => setFormData(prev => ({ ...prev, descricao: e.target.value }))}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500"
                 placeholder="Ex: Bolo de Chocolate"
               />
             </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Tempo de Preparo (minutos)
-              </label>
-              <input
-                type="number"
-                min="0"
-                value={formData.tempoPreparo}
-                onChange={(e) => setFormData(prev => ({ ...prev, tempoPreparo: parseInt(e.target.value) || 0 }))}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500"
-                placeholder="60"
-              />
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Descrição
-            </label>
-            <textarea
-              value={formData.descricao}
-              onChange={(e) => setFormData(prev => ({ ...prev, descricao: e.target.value }))}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500"
-              rows={3}
-              placeholder="Descrição da receita"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Instruções de Preparo
-            </label>
-            <textarea
-              value={formData.instrucoes}
-              onChange={(e) => setFormData(prev => ({ ...prev, instrucoes: e.target.value }))}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500"
-              rows={5}
-              placeholder="Passo a passo da receita..."
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Rendimento
-            </label>
-            <input
-              type="text"
-              value={formData.rendimento}
-              onChange={(e) => setFormData(prev => ({ ...prev, rendimento: e.target.value }))}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500"
-              placeholder="Ex: 12 unidades, 1 bolo grande"
-            />
           </div>
 
           {/* Materiais */}
@@ -216,7 +172,7 @@ export default function ReceitaForm({ materiais, onSave, onCancel, receita }: Re
                     <option value="">Selecione um material</option>
                     {materiais.map((material) => (
                       <option key={material.id} value={material.id}>
-                        {material.nome} - {formatCurrency(material.precoUnitario)}/{material.unidade}
+                        {material.descricao}
                       </option>
                     ))}
                   </select>
@@ -224,7 +180,7 @@ export default function ReceitaForm({ materiais, onSave, onCancel, receita }: Re
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Quantidade
+                    Quantidade Utilizada
                   </label>
                   <input
                     type="number"
@@ -244,9 +200,9 @@ export default function ReceitaForm({ materiais, onSave, onCancel, receita }: Re
                   <input
                     type="text"
                     value={unidade}
-                    onChange={(e) => setUnidade(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500"
-                    placeholder="kg, g, l, ml"
+                    readOnly
+                    disabled
+                    className="w-full px-3 py-2 border border-gray-200 bg-gray-100 text-gray-700 rounded-md cursor-not-allowed"
                   />
                 </div>
 
@@ -287,19 +243,19 @@ export default function ReceitaForm({ materiais, onSave, onCancel, receita }: Re
                   </thead>
                   <tbody className="divide-y divide-gray-200">
                     {formData.materiais.map((item, index) => {
-                      const material = materiais.find(m => m.id === item.materialId);
-                      const subtotal = material ? material.precoUnitario * item.quantidade : 0;
+                      const material = materiais.find(m => String(m.id) === String(item.materialId));
+                      const subtotal = material ? material.vlPorcao/material.qtPorcao * item.quantidade : 0;
                       
                       return (
                         <tr key={index}>
                           <td className="px-6 py-4 text-sm text-gray-900">
-                            {material?.nome}
+                            {material?.descricao}
                           </td>
                           <td className="px-6 py-4 text-sm text-gray-900">
                             {item.quantidade} {item.unidade}
                           </td>
                           <td className="px-6 py-4 text-sm text-gray-900">
-                            {material ? formatCurrency(material.precoUnitario) : '-'}
+                            {material ? formatCurrency(material.vlPorcao/material.qtPorcao) : '-'}
                           </td>
                           <td className="px-6 py-4 text-sm text-gray-900">
                             {formatCurrency(subtotal)}
@@ -348,7 +304,7 @@ export default function ReceitaForm({ materiais, onSave, onCancel, receita }: Re
             <button
               type="submit"
               className="flex-1 px-4 py-2 bg-pink-500 text-white rounded-md hover:bg-pink-600 transition-colors disabled:opacity-60"
-              disabled={!formData.nome || formData.materiais.length === 0}
+              disabled={!formData.descricao || formData.materiais.length === 0}
             >
               Salvar Receita
             </button>

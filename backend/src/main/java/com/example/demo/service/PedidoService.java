@@ -1,11 +1,13 @@
 package com.example.demo.service;
 
 import com.example.demo.dto.PedidoDTO;
-import com.example.demo.dto.PedidoReceitaDTO;
+import com.example.demo.dto.PedidoProdutoDTO;
 import com.example.demo.model.Pedido;
-import com.example.demo.model.PedidoReceita;
+import com.example.demo.model.PedidoProduto;
+import com.example.demo.model.Produto;
 import com.example.demo.model.Receita;
 import com.example.demo.repository.PedidoRepository;
+import com.example.demo.repository.ProdutoRepository;
 import com.example.demo.repository.ReceitaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,6 +24,8 @@ public class PedidoService {
     private PedidoRepository pedidoRepository;
     @Autowired
     private ReceitaRepository receitaRepository;
+    @Autowired
+    private ProdutoRepository produtoRepository;
 
     public List<PedidoDTO> findAll() {
         return pedidoRepository.findAll().stream()
@@ -38,12 +42,12 @@ public class PedidoService {
         // Calcular total do pedido
         BigDecimal total = BigDecimal.ZERO;
         if (pedido.getItens() != null) {
-            for (PedidoReceita item : pedido.getItens()) {
-                Receita receita = item.getReceita();
-                if (receita != null) {
+            for (PedidoProduto item : pedido.getItens()) {
+//                Receita receita = item.get();
+//                if (receita != null) {
                     // Aqui você pode calcular o valor da receita se desejar
                     // Exemplo: total = total.add(receita.getPreco().multiply(new BigDecimal(item.getQuantidade())));
-                }
+//                }
             }
         }
         pedido.setTotal(total);
@@ -60,19 +64,19 @@ public class PedidoService {
 
     public PedidoDTO update(Long id, PedidoDTO pedidoDTO) {
         Pedido pedido = pedidoRepository.findById(id).orElseThrow(() -> new RuntimeException("Pedido não encontrado"));
-        pedido.setNomeCliente(pedidoDTO.getNomeCliente());
-        if (pedidoDTO.getStatus() != null) pedido.setStatus(pedidoDTO.getStatus());
-        if (pedidoDTO.getItens() != null) {
+        pedido.setNomeCliente(pedidoDTO.nomeCliente());
+        if (pedidoDTO.status() != null) pedido.setStatus(pedidoDTO.status());
+        if (pedidoDTO.itens() != null) {
             // Remove itens antigos e adiciona os novos
             pedido.getItens().clear();
-            List<PedidoReceita> novosItens = pedidoDTO.getItens().stream().map(itemDTO -> {
-                PedidoReceita item = new PedidoReceita();
+            List<PedidoProduto> novosItens = pedidoDTO.itens().stream().map(itemDTO -> {
+                PedidoProduto item = new PedidoProduto();
                 item.setPedido(pedido);
-                if (itemDTO.getReceitaId() != null) {
-                    Receita receita = receitaRepository.findById(itemDTO.getReceitaId()).orElse(null);
-                    item.setReceita(receita);
-                }
-                item.setQuantidade(itemDTO.getQuantidade());
+//                if (itemDTO.getReceitaId() != null) {
+//                    Receita receita = receitaRepository.findById(itemDTO.getReceitaId()).orElse(null);
+//                    item.setReceita(receita);
+//                }
+                item.setQuantidade(itemDTO.quantidade());
                 return item;
             }).collect(Collectors.toList());
             pedido.getItens().addAll(novosItens);
@@ -87,7 +91,7 @@ public class PedidoService {
 
     // Conversão Entity <-> DTO
     private PedidoDTO toDTO(Pedido pedido) {
-        List<PedidoReceitaDTO> itens = null;
+        List<PedidoProdutoDTO> itens = null;
         if (pedido.getItens() != null) {
             itens = pedido.getItens().stream().map(this::toDTO).collect(Collectors.toList());
         }
@@ -101,40 +105,39 @@ public class PedidoService {
         );
     }
 
-    private PedidoReceitaDTO toDTO(PedidoReceita item) {
-        return new PedidoReceitaDTO(
+    private PedidoProdutoDTO toDTO(PedidoProduto item) {
+        return new PedidoProdutoDTO(
                 item.getId(),
-                item.getReceita() != null ? item.getReceita().getId() : null,
-                item.getReceita() != null ? item.getReceita().getNome() : null,
+                item.getPedido().getId(),
                 item.getQuantidade()
         );
     }
 
     private Pedido toEntity(PedidoDTO dto) {
         Pedido pedido = new Pedido();
-        pedido.setId(dto.getId());
-        pedido.setNomeCliente(dto.getNomeCliente());
-        if (dto.getDataPedido() != null) {
-            pedido.setDataPedido(dto.getDataPedido());
+        pedido.setId(dto.id());
+        pedido.setNomeCliente(dto.nomeCliente());
+        if (dto.dataPedido() != null) {
+            pedido.setDataPedido(dto.dataPedido());
         } else {
             pedido.setDataPedido(LocalDateTime.now());
         }
-        if (dto.getStatus() != null) {
-            pedido.setStatus(dto.getStatus());
+        if (dto.status() != null) {
+            pedido.setStatus(dto.status());
         } else {
             pedido.setStatus("PENDENTE");
         }
-        pedido.setTotal(dto.getTotal());
-        if (dto.getItens() != null) {
-            List<PedidoReceita> itens = dto.getItens().stream().map(itemDTO -> {
-                PedidoReceita item = new PedidoReceita();
-                item.setId(itemDTO.getId());
+        pedido.setTotal(dto.total());
+        if (dto.itens() != null) {
+            List<PedidoProduto> itens = dto.itens().stream().map(itemDTO -> {
+                PedidoProduto item = new PedidoProduto();
+                item.setId(itemDTO.id());
                 item.setPedido(pedido);
-                if (itemDTO.getReceitaId() != null) {
-                    Receita receita = receitaRepository.findById(itemDTO.getReceitaId()).orElse(null);
-                    item.setReceita(receita);
+                if (itemDTO.produtoId() != null) {
+                    Produto produto = produtoRepository.findById(itemDTO.produtoId()).orElse(null);
+                    item.setProduto(produto);
                 }
-                item.setQuantidade(itemDTO.getQuantidade());
+                item.setQuantidade(itemDTO.quantidade());
                 return item;
             }).collect(Collectors.toList());
             pedido.setItens(itens);

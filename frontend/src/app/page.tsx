@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import MaterialForm from "./components/MaterialForm";
 import MaterialTable from "./components/MaterialTable";
+import ProdutoTable from "./components/ProdutoTable";
 import ReceitaForm from "./components/ReceitaForm";
 import ReceitaTable from "./components/ReceitaTable";
 import ReceitaDetail from "./components/ReceitaDetail";
@@ -13,6 +14,7 @@ import MaterialDetail from "./components/MaterialDetail";
 import AuthGuard from "./components/AuthGuard";
 import { Dancing_Script } from "next/font/google";
 import { useRouter } from "next/navigation";
+import ProdutoForm from "./components/ProdutoForm";
 
 // Dados mockados para demonstração
 const mockMateriais = [
@@ -121,15 +123,19 @@ export default function Home() {
   const [activeTab, setActiveTab] = useState("dashboard");
   const [materiais, setMateriais] = useState<any[]>([]);
   const [receitas, setReceitas] = useState<any[]>([]);
+  const [produtos, setProdutos] = useState<any[]>([]);
   const [showMaterialForm, setShowMaterialForm] = useState(false);
   const [showReceitaForm, setShowReceitaForm] = useState(false);
   const [showReceitaDetail, setShowReceitaDetail] = useState(false);
+  const [showProdutoForm, setShowProdutoForm] = useState(false);
   const [editingMaterial, setEditingMaterial] = useState<any>(null);
   const [editingReceita, setEditingReceita] = useState<any>(null);
+  const [editingProduto, setEditingProduto] = useState<any>(null);
   const [viewingReceita, setViewingReceita] = useState<any>(null);
   const [viewingMaterial, setViewingMaterial] = useState<any>(null);
   const [materialMsg, setMaterialMsg] = useState("");
   const [receitaMsg, setReceitaMsg] = useState("");
+  const [produtoMsg, setProdutoMsg] = useState("");
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   // Buscar dados reais ao carregar
@@ -146,6 +152,9 @@ export default function Home() {
     authFetch("http://localhost:8080/api/receitas")
       .then(res => res.json())
       .then(setReceitas);
+    authFetch("http://localhost:8080/api/produtos")
+      .then(res => res.json())
+      .then(setProdutos);
   }, [router]);
 
   const handleLogout = () => {
@@ -184,7 +193,7 @@ export default function Home() {
       }
       if (!res.ok) throw new Error();
       setMaterialMsg("Material salvo com sucesso!");
-      fetch("http://localhost:8080/api/materiais").then(res => res.json()).then(setMateriais);
+      authFetch("http://localhost:8080/api/materiais").then(res => res.json()).then(setMateriais);
     } catch {
       setMaterialMsg("Erro ao salvar material");
     }
@@ -229,7 +238,7 @@ export default function Home() {
       }
       if (!res.ok) throw new Error();
       setReceitaMsg("Receita salva com sucesso!");
-      fetch("http://localhost:8080/api/receitas").then(res => res.json()).then(setReceitas);
+      authFetch("http://localhost:8080/api/receitas").then(res => res.json()).then(setReceitas);
     } catch {
       setReceitaMsg("Erro ao salvar receita");
     }
@@ -256,26 +265,93 @@ export default function Home() {
     setTimeout(() => setReceitaMsg(""), 1500);
   };
 
+  const handleSaveProduto = async (receita: any) => {
+    try {
+      let res;
+      if (editingReceita && editingReceita.id) {
+        res = await authFetch(`http://localhost:8080/api/produtos/${editingProduto.id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(receita)
+        });
+      } else {
+        res = await authFetch("http://localhost:8080/api/produtos", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(receita)
+        });
+      }
+      if (!res.ok) throw new Error();
+      setProdutoMsg("Produto salvo com sucesso!");
+      authFetch("http://localhost:8080/api/produtos").then(res => res.json()).then(setProdutos);
+    } catch {
+      setProdutoMsg("Erro ao salvar receita");
+    }
+    setShowReceitaForm(false);
+    setEditingReceita(null);
+    setTimeout(() => setReceitaMsg(""), 1500);
+  };
+
+  const handleEditProduto = (produto: any) => {
+    setEditingProduto(produto);
+    setShowProdutoForm(true);
+  };
+
+  const handleDeleteProduto = async (id: string | number) => {
+    if (!confirm("Tem certeza que deseja excluir este produto?")) return;
+    try {
+      const res = await authFetch(`http://localhost:8080/api/produtos/${id}`, { method: "DELETE" });
+      if (!res.ok) throw new Error();
+      setProdutoMsg("Produto excluído com sucesso!");
+      setProdutos(produtos => produtos.filter(r => r.id !== id));
+    } catch {
+      setReceitaMsg("Erro ao excluir produto");
+    }
+    setTimeout(() => setReceitaMsg(""), 1500);
+  };
+
   const handleViewReceita = (receita: any) => {
     setViewingReceita(receita);
     setShowReceitaDetail(true);
   };
 
   const handleUpdateEstoque = (materialId: string, novaQuantidade: number) => {
-    setMateriais(prev => prev.map(m => 
-      m.id === materialId ? { ...m, estoqueAtual: novaQuantidade } : m
-    ));
+    // setMateriais(prev => prev.map(m => 
+    //   m.id === materialId ? { ...m, estoqueAtual: novaQuantidade } : m
+    // ));
+    console.log(`Atualizando estoque do material ${materialId} para ${novaQuantidade}`);
   };
 
-  const handleAddMovimentacao = (movimentacao: any) => {
-    console.log("Nova movimentação:", movimentacao);
-    // Aqui você salvaria a movimentação no backend
+  const handleAddMovimentacao = async (movimentacao: any) => {
+    try {
+      const response = await authFetch("http://localhost:8080/api/movimentacoes", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(movimentacao)
+        });
+
+      if (!response.ok) {
+        const error = await response.text();
+        console.error("Erro ao registrar movimentação:", error);
+        alert("Erro ao registrar movimentação");
+        return;
+      }
+
+      const data = await response.json();
+      console.log("Movimentação registrada com sucesso:", data);
+      authFetch("http://localhost:8080/api/produtos").then(res => res.json()).then(setProdutos);
+      alert("Movimentação registrada com sucesso!");      
+    } catch (error) {
+      console.error("Erro na requisição:", error);
+      alert("Erro ao conectar com o servidor.");
+    }
   };
 
   const tabs = [
     { id: "dashboard", label: "Dashboard", icon: "📊" },
     { id: "materiais", label: "Materiais", icon: "📦" },
     { id: "receitas", label: "Receitas", icon: "🍰" },
+    { id: "produtos", label: "Produtos", icon: "🧁" },
     { id: "estoque", label: "Estoque", icon: "📋" },
     { id: "pedidos", label: "Pedidos", icon: "🧾" },
     { id: "relatorios", label: "Relatórios", icon: "📈" }
@@ -407,6 +483,33 @@ export default function Home() {
               </div>
             )}
 
+            {activeTab === "produtos" && (
+              <div className="space-y-6">
+                <div className="flex justify-between items-center">
+                  <div>
+                    <h2 className="text-2xl font-bold text-gray-900">Produtos</h2>
+                    <p className="text-gray-600">Produtos derivados das receitas</p>
+                  </div>
+                  {isAuthenticated && (
+                    <button
+                      onClick={() => setShowProdutoForm(true)}
+                      className="bg-pink-500 text-white px-4 py-2 rounded-md hover:bg-pink-600 transition-colors flex items-center space-x-2"
+                    >
+                      <span>+</span>
+                      <span>Novo Produto</span>
+                    </button>
+                  )}
+                </div>
+
+                <ProdutoTable
+                  produtos={produtos}
+                  onEdit={(produto) => console.log("Editar produto", produto)}
+                  onDelete={(id) => console.log("Excluir produto", id)}
+                  onView={(produto) => console.log("Visualizar produto", produto)}
+                />
+              </div>
+            )}
+
             {activeTab === "estoque" && (
               <div className="space-y-6">
                 <div>
@@ -415,7 +518,7 @@ export default function Home() {
                 </div>
 
                 <EstoqueControl
-                  materiais={materiais}
+                  produtos={produtos}
                   onUpdateEstoque={handleUpdateEstoque}
                   onAddMovimentacao={handleAddMovimentacao}
                 />
@@ -484,6 +587,18 @@ export default function Home() {
           />
         )}
 
+        {showProdutoForm && (
+          <ProdutoForm
+            receitas={receitas}
+            onSave={handleSaveProduto}
+            onCancel={() => {
+              setShowProdutoForm(false);
+              setEditingProduto(null);
+            }}
+            produto={editingProduto}
+          />
+        )}
+
         {viewingMaterial && (
           <MaterialDetail
             material={viewingMaterial}
@@ -493,6 +608,7 @@ export default function Home() {
 
         {materialMsg && <div className="fixed top-4 right-4 bg-pink-600 text-white px-4 py-2 rounded shadow z-50">{materialMsg}</div>}
         {receitaMsg && <div className="fixed top-4 right-4 bg-pink-600 text-white px-4 py-2 rounded shadow z-50">{receitaMsg}</div>}
+        {produtoMsg && <div className="fixed top-4 right-4 bg-pink-600 text-white px-4 py-2 rounded shadow z-50">{produtoMsg}</div>}
       </div>
     </AuthGuard>
   );

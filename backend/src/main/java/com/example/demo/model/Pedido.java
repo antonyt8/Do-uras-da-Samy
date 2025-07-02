@@ -10,7 +10,7 @@ import java.util.List;
 public class Pedido {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
     @Column(nullable = false)
     private String nomeCliente;
@@ -25,7 +25,7 @@ public class Pedido {
     private BigDecimal total;
 
     @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<PedidoReceita> itens;
+    private List<PedidoProduto> itens;
 
     public Pedido() {
         this.dataPedido = LocalDateTime.now();
@@ -34,8 +34,8 @@ public class Pedido {
     }
 
     // Getters e Setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    public Integer getId() { return id; }
+    public void setId(Integer id) { this.id = id; }
     public String getNomeCliente() { return nomeCliente; }
     public void setNomeCliente(String nomeCliente) { this.nomeCliente = nomeCliente; }
     public LocalDateTime getDataPedido() { return dataPedido; }
@@ -44,6 +44,6 @@ public class Pedido {
     public void setStatus(String status) { this.status = status; }
     public BigDecimal getTotal() { return total; }
     public void setTotal(BigDecimal total) { this.total = total; }
-    public List<PedidoReceita> getItens() { return itens; }
-    public void setItens(List<PedidoReceita> itens) { this.itens = itens; }
+    public List<PedidoProduto> getItens() { return itens; }
+    public void setItens(List<PedidoProduto> itens) { this.itens = itens; }
 } 

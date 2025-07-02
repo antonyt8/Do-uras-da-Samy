@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -38,13 +40,14 @@ public class MaterialService {
         Optional<Material> existingMaterial = materialRepository.findById(id);
         if (existingMaterial.isPresent()) {
             Material material = existingMaterial.get();
-            material.setNome(materialDTO.getNome());
-            material.setDescricao(materialDTO.getDescricao());
-            material.setCategoria(materialDTO.getCategoria());
-            material.setUnidade(materialDTO.getUnidade());
-            material.setPrecoUnitario(materialDTO.getPrecoUnitario());
-            material.setFornecedor(materialDTO.getFornecedor());
-            material.setEstoqueMinimo(materialDTO.getEstoqueMinimo());
+//            material.setNome(materialDTO.getNome());
+            material.setDescricao(materialDTO.descricao());
+            material.setQtPorcao(materialDTO.qtPorcao());
+//            material.setCategoria(materialDTO.getCategoria());
+//            material.setUnidade(materialDTO.getUnidade());
+//            material.setPrecoUnitario(materialDTO.getPrecoUnitario());
+//            material.setFornecedor(materialDTO.getFornecedor());
+//            material.setEstoqueMinimo(materialDTO.getEstoqueMinimo());
             
             Material updatedMaterial = materialRepository.save(material);
             return convertToDTO(updatedMaterial);
@@ -57,21 +60,24 @@ public class MaterialService {
     }
     
     public List<MaterialDTO> findByCategoria(String categoria) {
-        return materialRepository.findByCategoria(categoria).stream()
-                .map(this::convertToDTO)
-                .collect(Collectors.toList());
+        return new ArrayList<>();
+//        return materialRepository.findByCategoria(categoria).stream()
+//                .map(this::convertToDTO)
+//                .collect(Collectors.toList());
     }
     
     public List<MaterialDTO> findMateriaisComEstoqueBaixo() {
-        return materialRepository.findMateriaisComEstoqueBaixo().stream()
-                .map(this::convertToDTO)
-                .collect(Collectors.toList());
+        return new ArrayList<>();
+//        return materialRepository.findMateriaisComEstoqueBaixo().stream()
+//                .map(this::convertToDTO)
+//                .collect(Collectors.toList());
     }
     
     public List<MaterialDTO> findMateriaisSemEstoque() {
-        return materialRepository.findMateriaisSemEstoque().stream()
-                .map(this::convertToDTO)
-                .collect(Collectors.toList());
+//        return materialRepository.findMateriaisSemEstoque().stream()
+//                .map(this::convertToDTO)
+//                .collect(Collectors.toList());
+        return new ArrayList<>();
     }
     
     public List<MaterialDTO> findByNomeOuDescricaoContaining(String termo) {
@@ -81,7 +87,7 @@ public class MaterialService {
     }
     
     public BigDecimal calcularValorTotalEstoque() {
-        BigDecimal valor = materialRepository.calcularValorTotalEstoque();
+        BigDecimal valor = null;
         return valor != null ? valor : BigDecimal.ZERO;
     }
     
@@ -89,7 +95,7 @@ public class MaterialService {
         Optional<Material> materialOpt = materialRepository.findById(materialId);
         if (materialOpt.isPresent()) {
             Material material = materialOpt.get();
-            material.setEstoqueAtual(novaQuantidade);
+//            material.setEstoqueAtual(novaQuantidade);
             materialRepository.save(material);
         } else {
             throw new RuntimeException("Material não encontrado com ID: " + materialId);
@@ -99,28 +105,18 @@ public class MaterialService {
     private MaterialDTO convertToDTO(Material material) {
         return new MaterialDTO(
                 material.getId(),
-                material.getNome(),
                 material.getDescricao(),
-                material.getCategoria(),
-                material.getUnidade(),
-                material.getPrecoUnitario(),
-                material.getFornecedor(),
-                material.getEstoqueAtual(),
-                material.getEstoqueMinimo()
+                material.getQtPorcao(),
+                material.getUnidadeMedida(),
+                material.getValorPorcao()
         );
     }
     
     private Material convertToEntity(MaterialDTO materialDTO) {
         Material material = new Material();
-        material.setId(materialDTO.getId());
-        material.setNome(materialDTO.getNome());
-        material.setDescricao(materialDTO.getDescricao());
-        material.setCategoria(materialDTO.getCategoria());
-        material.setUnidade(materialDTO.getUnidade());
-        material.setPrecoUnitario(materialDTO.getPrecoUnitario());
-        material.setFornecedor(materialDTO.getFornecedor());
-        material.setEstoqueAtual(materialDTO.getEstoqueAtual() != null ? materialDTO.getEstoqueAtual() : BigDecimal.ZERO);
-        material.setEstoqueMinimo(materialDTO.getEstoqueMinimo() != null ? materialDTO.getEstoqueMinimo() : BigDecimal.ZERO);
+        material.setId(materialDTO.id());
+        material.setDescricao(materialDTO.descricao());
+        material.setQtPorcao(materialDTO.qtPorcao());
         return material;
     }
 } 

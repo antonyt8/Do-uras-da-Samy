@@ -12,22 +12,22 @@ import java.util.List;
 @Repository
 public interface MaterialRepository extends JpaRepository<Material, Long> {
     
-    List<Material> findByCategoria(String categoria);
+//    List<Material> findByCategoria(String categoria);
+//
+//    List<Material> findByFornecedor(String fornecedor);
     
-    List<Material> findByFornecedor(String fornecedor);
+//    @Query("SELECT m FROM Material m WHERE m.estoqueAtual <= m.estoqueMinimo")
+//    List<Material> findMateriaisComEstoqueBaixo();
+//
+//    @Query("SELECT m FROM Material m WHERE m.estoqueAtual = 0")
+//    List<Material> findMateriaisSemEstoque();
     
-    @Query("SELECT m FROM Material m WHERE m.estoqueAtual <= m.estoqueMinimo")
-    List<Material> findMateriaisComEstoqueBaixo();
-    
-    @Query("SELECT m FROM Material m WHERE m.estoqueAtual = 0")
-    List<Material> findMateriaisSemEstoque();
-    
-    @Query("SELECT m FROM Material m WHERE m.nome LIKE %:termo% OR m.descricao LIKE %:termo%")
+    @Query("SELECT m FROM Material m WHERE m.descricao LIKE %:termo%")
     List<Material> findByNomeOuDescricaoContaining(@Param("termo") String termo);
     
-    @Query("SELECT SUM(m.estoqueAtual * m.precoUnitario) FROM Material m")
-    BigDecimal calcularValorTotalEstoque();
-    
-    @Query("SELECT m.categoria, SUM(m.estoqueAtual * m.precoUnitario) FROM Material m GROUP BY m.categoria")
-    List<Object[]> calcularValorPorCategoria();
+//    @Query("SELECT SUM(m.estoqueAtual * m.precoUnitario) FROM Material m")
+//    BigDecimal calcularValorTotalEstoque();
+//
+//    @Query("SELECT m.categoria, SUM(m.estoqueAtual * m.precoUnitario) FROM Material m GROUP BY m.categoria")
+//    List<Object[]> calcularValorPorCategoria();
 } 
