@@ -22,10 +22,10 @@ const mockMateriais = [
     descricao: "Farinha de trigo tipo 1",
     categoria: "Farinhas",
     unidade: "kg",
-    precoUnitario: 4.50,
+    precoUnitario: 4.5,
     fornecedor: "Distribuidora Central",
     estoqueAtual: 25.5,
-    estoqueMinimo: 10.0
+    estoqueMinimo: 10.0,
   },
   {
     id: "2",
@@ -33,10 +33,10 @@ const mockMateriais = [
     descricao: "Açúcar branco refinado",
     categoria: "Açúcares",
     unidade: "kg",
-    precoUnitario: 3.80,
+    precoUnitario: 3.8,
     fornecedor: "Distribuidora Central",
     estoqueAtual: 15.0,
-    estoqueMinimo: 8.0
+    estoqueMinimo: 8.0,
   },
   {
     id: "3",
@@ -44,10 +44,10 @@ const mockMateriais = [
     descricao: "Chocolate em pó 50% cacau",
     categoria: "Chocolates",
     unidade: "kg",
-    precoUnitario: 25.00,
+    precoUnitario: 25.0,
     fornecedor: "Cacau Brasil",
     estoqueAtual: 2.5,
-    estoqueMinimo: 5.0
+    estoqueMinimo: 5.0,
   },
   {
     id: "4",
@@ -55,11 +55,11 @@ const mockMateriais = [
     descricao: "Ovos de galinha caipira",
     categoria: "Ovos",
     unidade: "dúzia",
-    precoUnitario: 8.50,
+    precoUnitario: 8.5,
     fornecedor: "Granja São João",
     estoqueAtual: 0,
-    estoqueMinimo: 5
-  }
+    estoqueMinimo: 5,
+  },
 ];
 
 const mockReceitas = [
@@ -67,33 +67,35 @@ const mockReceitas = [
     id: "1",
     nome: "Bolo de Chocolate",
     descricao: "Delicioso bolo de chocolate com cobertura cremosa",
-    instrucoes: "1. Pré-aqueça o forno a 180°C\n2. Misture os ingredientes secos\n3. Adicione os ingredientes líquidos\n4. Asse por 40 minutos\n5. Deixe esfriar antes de desenformar",
+    instrucoes:
+      "1. Pré-aqueça o forno a 180°C\n2. Misture os ingredientes secos\n3. Adicione os ingredientes líquidos\n4. Asse por 40 minutos\n5. Deixe esfriar antes de desenformar",
     tempoPreparo: 60,
     rendimento: "12 fatias",
     materiais: [
       { materialId: "1", quantidade: 2, unidade: "kg" },
       { materialId: "2", quantidade: 1.5, unidade: "kg" },
       { materialId: "3", quantidade: 0.5, unidade: "kg" },
-      { materialId: "4", quantidade: 3, unidade: "dúzia" }
+      { materialId: "4", quantidade: 3, unidade: "dúzia" },
     ],
     dataCriacao: "2024-01-15",
-    visualizacoes: 15
+    visualizacoes: 15,
   },
   {
     id: "2",
     nome: "Torta de Maçã",
     descricao: "Torta tradicional de maçã com massa crocante",
-    instrucoes: "1. Prepare a massa\n2. Corte as maçãs\n3. Monte a torta\n4. Asse por 45 minutos",
+    instrucoes:
+      "1. Prepare a massa\n2. Corte as maçãs\n3. Monte a torta\n4. Asse por 45 minutos",
     tempoPreparo: 90,
     rendimento: "8 porções",
     materiais: [
       { materialId: "1", quantidade: 1, unidade: "kg" },
       { materialId: "2", quantidade: 0.5, unidade: "kg" },
-      { materialId: "4", quantidade: 2, unidade: "dúzia" }
+      { materialId: "4", quantidade: 2, unidade: "dúzia" },
     ],
     dataCriacao: "2024-01-20",
-    visualizacoes: 8
-  }
+    visualizacoes: 8,
+  },
 ];
 
 const mockStats = {
@@ -104,14 +106,14 @@ const mockStats = {
   materiaisBaixoEstoque: 2,
   receitasPopulares: [
     { nome: "Bolo de Chocolate", visualizacoes: 15 },
-    { nome: "Torta de Maçã", visualizacoes: 8 }
+    { nome: "Torta de Maçã", visualizacoes: 8 },
   ],
   custosPorCategoria: [
-    { categoria: "Chocolates", valor: 125.00 },
-    { categoria: "Farinhas", valor: 45.00 },
-    { categoria: "Açúcares", valor: 38.00 },
-    { categoria: "Ovos", valor: 85.00 }
-  ]
+    { categoria: "Chocolates", valor: 125.0 },
+    { categoria: "Farinhas", valor: 45.0 },
+    { categoria: "Açúcares", valor: 38.0 },
+    { categoria: "Ovos", valor: 85.0 },
+  ],
 };
 
 const dancing = Dancing_Script({ subsets: ["latin"], weight: "700" });
@@ -140,11 +142,11 @@ export default function Home() {
       router.replace("/login");
       return;
     }
-    authFetch("http://localhost:8080/api/materiais")
-      .then(res => res.json())
+    authFetch("https://sammy-back.onrender.com/api/materiais")
+      .then((res) => res.json())
       .then(setMateriais);
-    authFetch("http://localhost:8080/api/receitas")
-      .then(res => res.json())
+    authFetch("https://sammy-back.onrender.com/api/receitas")
+      .then((res) => res.json())
       .then(setReceitas);
   }, [router]);
 
@@ -161,8 +163,8 @@ export default function Home() {
       ...options,
       headers: {
         ...(options.headers || {}),
-        ...(token ? { Authorization: `Bearer ${token}` } : {})
-      }
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
     });
   };
 
@@ -170,21 +172,26 @@ export default function Home() {
     try {
       let res;
       if (editingMaterial && editingMaterial.id) {
-        res = await authFetch(`http://localhost:8080/api/materiais/${editingMaterial.id}`, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(material)
-        });
+        res = await authFetch(
+          `https://sammy-back.onrender.com/api/materiais/${editingMaterial.id}`,
+          {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(material),
+          },
+        );
       } else {
-        res = await authFetch("http://localhost:8080/api/materiais", {
+        res = await authFetch("https://sammy-back.onrender.com/api/materiais", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(material)
+          body: JSON.stringify(material),
         });
       }
       if (!res.ok) throw new Error();
       setMaterialMsg("Material salvo com sucesso!");
-      fetch("http://localhost:8080/api/materiais").then(res => res.json()).then(setMateriais);
+      fetch("https://sammy-back.onrender.com/api/materiais")
+        .then((res) => res.json())
+        .then(setMateriais);
     } catch {
       setMaterialMsg("Erro ao salvar material");
     }
@@ -201,10 +208,13 @@ export default function Home() {
   const handleDeleteMaterial = async (id: string | number) => {
     if (!confirm("Tem certeza que deseja excluir este material?")) return;
     try {
-      const res = await authFetch(`http://localhost:8080/api/materiais/${id}`, { method: "DELETE" });
+      const res = await authFetch(
+        `https://sammy-back.onrender.com/api/materiais/${id}`,
+        { method: "DELETE" },
+      );
       if (!res.ok) throw new Error();
       setMaterialMsg("Material excluído com sucesso!");
-      setMateriais(materiais => materiais.filter(m => m.id !== id));
+      setMateriais((materiais) => materiais.filter((m) => m.id !== id));
     } catch {
       setMaterialMsg("Erro ao excluir material");
     }
@@ -215,21 +225,26 @@ export default function Home() {
     try {
       let res;
       if (editingReceita && editingReceita.id) {
-        res = await authFetch(`http://localhost:8080/api/receitas/${editingReceita.id}`, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(receita)
-        });
+        res = await authFetch(
+          `https://sammy-back.onrender.com/api/receitas/${editingReceita.id}`,
+          {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(receita),
+          },
+        );
       } else {
-        res = await authFetch("http://localhost:8080/api/receitas", {
+        res = await authFetch("https://sammy-back.onrender.com/api/receitas", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(receita)
+          body: JSON.stringify(receita),
         });
       }
       if (!res.ok) throw new Error();
       setReceitaMsg("Receita salva com sucesso!");
-      fetch("http://localhost:8080/api/receitas").then(res => res.json()).then(setReceitas);
+      fetch("https://sammy-back.onrender.com/api/receitas")
+        .then((res) => res.json())
+        .then(setReceitas);
     } catch {
       setReceitaMsg("Erro ao salvar receita");
     }
@@ -246,10 +261,13 @@ export default function Home() {
   const handleDeleteReceita = async (id: string | number) => {
     if (!confirm("Tem certeza que deseja excluir esta receita?")) return;
     try {
-      const res = await authFetch(`http://localhost:8080/api/receitas/${id}`, { method: "DELETE" });
+      const res = await authFetch(
+        `https://sammy-back.onrender.com/api/receitas/${id}`,
+        { method: "DELETE" },
+      );
       if (!res.ok) throw new Error();
       setReceitaMsg("Receita excluída com sucesso!");
-      setReceitas(receitas => receitas.filter(r => r.id !== id));
+      setReceitas((receitas) => receitas.filter((r) => r.id !== id));
     } catch {
       setReceitaMsg("Erro ao excluir receita");
     }
@@ -262,9 +280,11 @@ export default function Home() {
   };
 
   const handleUpdateEstoque = (materialId: string, novaQuantidade: number) => {
-    setMateriais(prev => prev.map(m => 
-      m.id === materialId ? { ...m, estoqueAtual: novaQuantidade } : m
-    ));
+    setMateriais((prev) =>
+      prev.map((m) =>
+        m.id === materialId ? { ...m, estoqueAtual: novaQuantidade } : m,
+      ),
+    );
   };
 
   const handleAddMovimentacao = (movimentacao: any) => {
@@ -278,7 +298,7 @@ export default function Home() {
     { id: "receitas", label: "Receitas", icon: "🍰" },
     { id: "estoque", label: "Estoque", icon: "📋" },
     { id: "pedidos", label: "Pedidos", icon: "🧾" },
-    { id: "relatorios", label: "Relatórios", icon: "📈" }
+    { id: "relatorios", label: "Relatórios", icon: "📈" },
   ];
 
   return (
@@ -290,18 +310,31 @@ export default function Home() {
             <div className="flex justify-between items-center h-20">
               <div className="flex items-center space-x-3">
                 <span className="text-3xl">🍰</span>
-                <h1 className={`text-2xl font-bold text-[#7A5C3D] ${dancing.className}`}>Delícias da Samy</h1>
-                <span className="ml-2 text-sm text-[#BFA181] font-medium">Sistema de Gestão</span>
+                <h1
+                  className={`text-2xl font-bold text-[#7A5C3D] ${dancing.className}`}
+                >
+                  Delícias da Samy
+                </h1>
+                <span className="ml-2 text-sm text-[#BFA181] font-medium">
+                  Sistema de Gestão
+                </span>
               </div>
               <div className="flex items-center space-x-4">
                 {isAuthenticated && (
-                  <button onClick={handleLogout} className="text-[#7A5C3D] hover:text-[#C2A85D] font-semibold transition-colors px-3 py-1 rounded-md border border-transparent hover:border-[#C2A85D]">Sair</button>
+                  <button
+                    onClick={handleLogout}
+                    className="text-[#7A5C3D] hover:text-[#C2A85D] font-semibold transition-colors px-3 py-1 rounded-md border border-transparent hover:border-[#C2A85D]"
+                  >
+                    Sair
+                  </button>
                 )}
                 <div className="flex items-center space-x-2">
                   <div className="w-9 h-9 bg-pink-500 rounded-full flex items-center justify-center text-white text-lg font-bold border-2 border-[#C2A85D] shadow-md">
                     S
                   </div>
-                  <span className="text-base font-medium text-[#7A5C3D]">Samy</span>
+                  <span className="text-base font-medium text-[#7A5C3D]">
+                    Samy
+                  </span>
                 </div>
               </div>
             </div>
@@ -317,11 +350,18 @@ export default function Home() {
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
                   className={`flex items-center space-x-2 px-4 py-2 rounded-lg text-base font-semibold transition-all duration-200
-                    ${activeTab === tab.id
-                      ? "bg-[#F7C5CC] text-[#7A5C3D] shadow-md border border-[#C2A85D]"
-                      : "text-[#BFA181] hover:text-[#7A5C3D] hover:bg-[#FFF8F0]"}
+                    ${
+                      activeTab === tab.id
+                        ? "bg-[#F7C5CC] text-[#7A5C3D] shadow-md border border-[#C2A85D]"
+                        : "text-[#BFA181] hover:text-[#7A5C3D] hover:bg-[#FFF8F0]"
+                    }
                   `}
-                  style={{ boxShadow: activeTab === tab.id ? "0 2px 8px rgba(194,168,93,0.10)" : undefined }}
+                  style={{
+                    boxShadow:
+                      activeTab === tab.id
+                        ? "0 2px 8px rgba(194,168,93,0.10)"
+                        : undefined,
+                  }}
                 >
                   <span className="text-xl">{tab.icon}</span>
                   <span>{tab.label}</span>
@@ -332,16 +372,18 @@ export default function Home() {
 
           {/* Content */}
           <div className="space-y-6">
-            {activeTab === "dashboard" && (
-              <Dashboard />
-            )}
+            {activeTab === "dashboard" && <Dashboard />}
 
             {activeTab === "materiais" && (
               <div className="space-y-6">
                 <div className="flex justify-between items-center">
                   <div>
-                    <h2 className="text-2xl font-bold text-gray-900">Materiais</h2>
-                    <p className="text-gray-600">Gerencie os materiais e ingredientes</p>
+                    <h2 className="text-2xl font-bold text-gray-900">
+                      Materiais
+                    </h2>
+                    <p className="text-gray-600">
+                      Gerencie os materiais e ingredientes
+                    </p>
                   </div>
                   {isAuthenticated && (
                     <button
@@ -367,8 +409,12 @@ export default function Home() {
               <div className="space-y-6">
                 <div className="flex justify-between items-center">
                   <div>
-                    <h2 className="text-2xl font-bold text-gray-900">Receitas</h2>
-                    <p className="text-gray-600">Gerencie as receitas e seus custos</p>
+                    <h2 className="text-2xl font-bold text-gray-900">
+                      Receitas
+                    </h2>
+                    <p className="text-gray-600">
+                      Gerencie as receitas e seus custos
+                    </p>
                   </div>
                   {isAuthenticated && (
                     <button
@@ -384,8 +430,13 @@ export default function Home() {
                 {receitas.length === 0 ? (
                   <div className="bg-white p-8 rounded-lg shadow-sm border border-gray-200 text-center">
                     <span className="text-6xl mb-4 block">🍰</span>
-                    <h3 className="text-xl font-semibold text-gray-900 mb-2">Nenhuma receita cadastrada</h3>
-                    <p className="text-gray-600 mb-4">Comece criando sua primeira receita para calcular custos e gerenciar ingredientes</p>
+                    <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                      Nenhuma receita cadastrada
+                    </h3>
+                    <p className="text-gray-600 mb-4">
+                      Comece criando sua primeira receita para calcular custos e
+                      gerenciar ingredientes
+                    </p>
                     {isAuthenticated && (
                       <button
                         onClick={() => setShowReceitaForm(true)}
@@ -410,8 +461,12 @@ export default function Home() {
             {activeTab === "estoque" && (
               <div className="space-y-6">
                 <div>
-                  <h2 className="text-2xl font-bold text-gray-900">Controle de Estoque</h2>
-                  <p className="text-gray-600">Monitore o estoque e configure alertas</p>
+                  <h2 className="text-2xl font-bold text-gray-900">
+                    Controle de Estoque
+                  </h2>
+                  <p className="text-gray-600">
+                    Monitore o estoque e configure alertas
+                  </p>
                 </div>
 
                 <EstoqueControl
@@ -422,21 +477,27 @@ export default function Home() {
               </div>
             )}
 
-            {activeTab === "pedidos" && (
-              <PedidosPage />
-            )}
+            {activeTab === "pedidos" && <PedidosPage />}
 
             {activeTab === "relatorios" && (
               <div className="space-y-6">
                 <div>
-                  <h2 className="text-2xl font-bold text-gray-900">Relatórios</h2>
-                  <p className="text-gray-600">Visualize relatórios e análises</p>
+                  <h2 className="text-2xl font-bold text-gray-900">
+                    Relatórios
+                  </h2>
+                  <p className="text-gray-600">
+                    Visualize relatórios e análises
+                  </p>
                 </div>
 
                 <div className="bg-white p-8 rounded-lg shadow-sm border border-gray-200 text-center">
                   <span className="text-6xl mb-4 block">📈</span>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">Funcionalidade em Desenvolvimento</h3>
-                  <p className="text-gray-600">Os relatórios serão implementados em breve</p>
+                  <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                    Funcionalidade em Desenvolvimento
+                  </h3>
+                  <p className="text-gray-600">
+                    Os relatórios serão implementados em breve
+                  </p>
                 </div>
               </div>
             )}
@@ -491,9 +552,17 @@ export default function Home() {
           />
         )}
 
-        {materialMsg && <div className="fixed top-4 right-4 bg-pink-600 text-white px-4 py-2 rounded shadow z-50">{materialMsg}</div>}
-        {receitaMsg && <div className="fixed top-4 right-4 bg-pink-600 text-white px-4 py-2 rounded shadow z-50">{receitaMsg}</div>}
+        {materialMsg && (
+          <div className="fixed top-4 right-4 bg-pink-600 text-white px-4 py-2 rounded shadow z-50">
+            {materialMsg}
+          </div>
+        )}
+        {receitaMsg && (
+          <div className="fixed top-4 right-4 bg-pink-600 text-white px-4 py-2 rounded shadow z-50">
+            {receitaMsg}
+          </div>
+        )}
       </div>
     </AuthGuard>
   );
-} 
+}

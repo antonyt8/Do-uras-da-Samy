@@ -2,16 +2,16 @@ package com.example.demo.controller;
 
 import com.example.demo.dto.ReceitaDTO;
 import com.example.demo.service.ReceitaService;
+import java.util.List;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.Optional;
-
 @RestController
 @RequestMapping("/api/receitas")
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "*")
 public class ReceitaController {
+
     @Autowired
     private ReceitaService receitaService;
 
@@ -31,7 +31,10 @@ public class ReceitaController {
     }
 
     @PutMapping("/{id}")
-    public ReceitaDTO update(@PathVariable Long id, @RequestBody ReceitaDTO receitaDTO) {
+    public ReceitaDTO update(
+        @PathVariable Long id,
+        @RequestBody ReceitaDTO receitaDTO
+    ) {
         return receitaService.update(id, receitaDTO);
     }
 
@@ -39,4 +42,4 @@ public class ReceitaController {
     public void delete(@PathVariable Long id) {
         receitaService.deleteById(id);
     }
-} 
+}
