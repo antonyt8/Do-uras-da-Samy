@@ -1,10 +1,13 @@
 package com.example.demo.model;
 
 import jakarta.persistence.*;
+import lombok.Data;
+
 import java.math.BigDecimal;
 
 @Entity
 @Table(name = "receita_materiais")
+@Data
 public class ReceitaMaterial {
     
     @Id
@@ -24,55 +27,4 @@ public class ReceitaMaterial {
     
     @Column(nullable = false)
     private String unidade;
-    
-    // Construtores
-    public ReceitaMaterial() {}
-    
-    public ReceitaMaterial(Receita receita, Material material, BigDecimal quantidade, String unidade) {
-        this.receita = receita;
-        this.material = material;
-        this.quantidade = quantidade;
-        this.unidade = unidade;
-    }
-    
-    // Getters e Setters
-    public Long getId() {
-        return id;
-    }
-    
-    public void setId(Long id) {
-        this.id = id;
-    }
-    
-    public Receita getReceita() {
-        return receita;
-    }
-    
-    public void setReceita(Receita receita) {
-        this.receita = receita;
-    }
-    
-    public Material getMaterial() {
-        return material;
-    }
-    
-    public void setMaterial(Material material) {
-        this.material = material;
-    }
-    
-    public BigDecimal getQuantidade() {
-        return quantidade;
-    }
-    
-    public void setQuantidade(BigDecimal quantidade) {
-        this.quantidade = quantidade;
-    }
-    
-    public String getUnidade() {
-        return unidade;
-    }
-    
-    public void setUnidade(String unidade) {
-        this.unidade = unidade;
-    }
 } 

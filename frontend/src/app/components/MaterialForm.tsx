@@ -4,12 +4,9 @@ import { useState, useEffect } from "react";
 
 interface Material {
   id?: string;
-  nome: string;
   descricao: string;
-  unidade: string;
-  precoUnitario: number;
-  fornecedor: string;
-  categoria: string;
+  qtPorcao: string;
+  unidadeMedida: string;
 }
 
 interface MaterialFormProps {
@@ -20,12 +17,9 @@ interface MaterialFormProps {
 
 export default function MaterialForm({ onSave, onCancel, material }: MaterialFormProps) {
   const [formData, setFormData] = useState<Material>({
-    nome: "",
     descricao: "",
-    unidade: "",
-    precoUnitario: 0,
-    fornecedor: "",
-    categoria: "",
+    unidadeMedida: "",
+    qtPorcao: ""
   });
 
   const [success, setSuccess] = useState("");
@@ -37,25 +31,14 @@ export default function MaterialForm({ onSave, onCancel, material }: MaterialFor
     }
   }, [material]);
 
-  const categorias = [
-    "Farinhas",
-    "Açúcares",
-    "Ovos",
-    "Leite e Derivados",
-    "Frutas",
-    "Chocolates",
-    "Especiarias",
-    "Outros",
-  ];
-
-  const unidades = ["kg", "g", "l", "ml", "un", "pct", "cx", "dúzia"];
+  const unidades = ["GRAMAS", "LITRO", "UNIDADE", "MILILITRO"];
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSuccess("");
     setError("");
     // Validação simples
-    if (!formData.nome || !formData.unidade || !formData.categoria || formData.precoUnitario <= 0) {
+    if (!formData.descricao || !formData.unidadeMedida || !formData.qtPorcao) {
       setError("Preencha todos os campos obrigatórios e um preço válido.");
       return;
     }
@@ -101,14 +84,14 @@ export default function MaterialForm({ onSave, onCancel, material }: MaterialFor
             <input
               type="text"
               required
-              value={formData.nome}
-              onChange={(e) => handleChange("nome", e.target.value)}
+              value={formData.descricao}
+              onChange={(e) => handleChange("descricao", e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500"
               placeholder="Ex: Farinha de Trigo"
             />
           </div>
 
-          <div>
+          {/* <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Descrição
             </label>
@@ -119,26 +102,21 @@ export default function MaterialForm({ onSave, onCancel, material }: MaterialFor
               rows={3}
               placeholder="Descrição detalhada do material"
             />
-          </div>
+          </div> */}
 
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Categoria *
+                Qtd. Porção *
               </label>
-              <select
-                required
-                value={formData.categoria}
-                onChange={(e) => handleChange("categoria", e.target.value)}
+              <input
+                type="number"
+                min={1}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500"
-              >
-                <option value="">Selecione...</option>
-                {categorias.map((cat) => (
-                  <option key={cat} value={cat}>
-                    {cat}
-                  </option>
-                ))}
-              </select>
+                value={formData.qtPorcao}
+                onChange={(e) => handleChange("qtPorcao", e.target.value)}
+                required
+              />
             </div>
 
             <div>
@@ -147,8 +125,8 @@ export default function MaterialForm({ onSave, onCancel, material }: MaterialFor
               </label>
               <select
                 required
-                value={formData.unidade}
-                onChange={(e) => handleChange("unidade", e.target.value)}
+                value={formData.unidadeMedida}
+                onChange={(e) => handleChange("unidadeMedida", e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500"
               >
                 <option value="">Selecione...</option>
@@ -159,35 +137,6 @@ export default function MaterialForm({ onSave, onCancel, material }: MaterialFor
                 ))}
               </select>
             </div>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Preço Unitário (R$) *
-            </label>
-            <input
-              type="number"
-              required
-              step="0.01"
-              min="0"
-              value={formData.precoUnitario}
-              onChange={(e) => handleChange("precoUnitario", parseFloat(e.target.value) || 0)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500"
-              placeholder="0.00"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Fornecedor
-            </label>
-            <input
-              type="text"
-              value={formData.fornecedor}
-              onChange={(e) => handleChange("fornecedor", e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500"
-              placeholder="Nome do fornecedor"
-            />
           </div>
 
           {success && <div className="text-green-600 mb-2 font-semibold bg-green-50 border border-green-200 rounded p-2 text-center">{success}</div>}
@@ -204,7 +153,7 @@ export default function MaterialForm({ onSave, onCancel, material }: MaterialFor
             <button
               type="submit"
               className="flex-1 px-4 py-2 bg-pink-500 text-white rounded-md hover:bg-pink-600 transition-colors disabled:opacity-60"
-              disabled={!formData.nome || !formData.unidade || !formData.categoria || formData.precoUnitario <= 0}
+              disabled={!formData.descricao || !formData.unidadeMedida || !formData.qtPorcao}
             >
               {material ? "Atualizar" : "Salvar"}
             </button>

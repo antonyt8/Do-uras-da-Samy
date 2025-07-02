@@ -18,12 +18,7 @@ interface ReceitaMaterial {
 
 interface Receita {
   id: string | number;
-  nome: string;
   descricao: string;
-  tempoPreparo: number;
-  rendimento: string;
-  dataCriacao: string;
-  visualizacoes: number;
   materiais: { materialId: string | number; quantidade: number; unidade: string }[];
 }
 
@@ -53,12 +48,7 @@ export default function ReceitaTable({ receitas, materiais, onEdit, onDelete, on
       <table className="min-w-full bg-[#FFF8F0] border border-[#F6E3B4] rounded-2xl shadow-lg">
         <thead>
           <tr className="bg-[#F6E3B4] text-[#7A5C3D]">
-            <th className="px-6 py-3 border-b font-semibold text-lg">Nome</th>
             <th className="px-6 py-3 border-b font-semibold text-lg">Descrição</th>
-            <th className="px-6 py-3 border-b font-semibold text-lg">Tempo Preparo</th>
-            <th className="px-6 py-3 border-b font-semibold text-lg">Rendimento</th>
-            <th className="px-6 py-3 border-b font-semibold text-lg">Data Criação</th>
-            <th className="px-6 py-3 border-b font-semibold text-lg">Visualizações</th>
             <th className="px-6 py-3 border-b font-semibold text-lg">Ingredientes</th>
             <th className="px-6 py-3 border-b font-semibold text-lg">Ações</th>
           </tr>
@@ -68,12 +58,8 @@ export default function ReceitaTable({ receitas, materiais, onEdit, onDelete, on
             <tr key={receita.id} className={
               `transition-colors ${idx % 2 === 0 ? 'bg-white' : 'bg-[#FAF3E3]'} hover:bg-[#F7C5CC]/40`
             }>
-              <td className="px-6 py-3 border-b text-gray-900 font-medium whitespace-nowrap">{receita.nome}</td>
+              {/* <td className="px-6 py-3 border-b text-gray-900 font-medium whitespace-nowrap">{receita.nome}</td> */}
               <td className="px-6 py-3 border-b max-w-xs truncate" title={receita.descricao}>{receita.descricao}</td>
-              <td className="px-6 py-3 border-b">{receita.tempoPreparo} min</td>
-              <td className="px-6 py-3 border-b">{receita.rendimento}</td>
-              <td className="px-6 py-3 border-b">{new Date(receita.dataCriacao).toLocaleDateString()}</td>
-              <td className="px-6 py-3 border-b">{receita.visualizacoes}</td>
               <td className="px-6 py-3 border-b text-center">{receita.materiais?.length || 0} ingrediente{receita.materiais?.length === 1 ? '' : 's'}</td>
               <td className="px-6 py-3 border-b flex gap-2 items-center">
                 <button

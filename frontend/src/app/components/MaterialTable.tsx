@@ -4,14 +4,10 @@ import { useState, useEffect } from "react";
 
 interface Material {
   id: string | number;
-  nome: string;
   descricao: string;
-  categoria: string;
+  qtPorcao: string;
   unidade: string;
-  precoUnitario: number;
-  fornecedor: string;
-  estoqueAtual: number;
-  estoqueMinimo: number;
+  vlPorcao: number
 }
 
 interface Props {
@@ -40,12 +36,9 @@ export default function MaterialTable({ materiais, onEdit, onDelete, onView }: P
         <thead>
           <tr className="bg-[#F6E3B4] text-[#7A5C3D]">
             <th className="px-6 py-3 border-b font-semibold text-lg">Nome</th>
-            <th className="px-6 py-3 border-b font-semibold text-lg">Categoria</th>
+            <th className="px-6 py-3 border-b font-semibold text-lg">Qtd. Porção</th>
             <th className="px-6 py-3 border-b font-semibold text-lg">Unidade</th>
-            <th className="px-6 py-3 border-b font-semibold text-lg">Preço Unitário</th>
-            <th className="px-6 py-3 border-b font-semibold text-lg">Fornecedor</th>
-            <th className="px-6 py-3 border-b font-semibold text-lg">Estoque Atual</th>
-            <th className="px-6 py-3 border-b font-semibold text-lg">Estoque Mínimo</th>
+            <th className="px-6 py-3 border-b font-semibold text-lg">Valor Porção</th>
             <th className="px-6 py-3 border-b font-semibold text-lg">Ações</th>
           </tr>
         </thead>
@@ -57,13 +50,10 @@ export default function MaterialTable({ materiais, onEdit, onDelete, onView }: P
               if ((e.target as HTMLElement).tagName === 'BUTTON') return;
               onView(material);
             }}>
-              <td className="px-6 py-3 border-b text-gray-900">{material.nome}</td>
-              <td className="px-6 py-3 border-b text-gray-700">{material.categoria}</td>
+              <td className="px-6 py-3 border-b text-gray-900">{material.descricao}</td>
+              <td className="px-6 py-3 border-b text-gray-700">{material.qtPorcao}</td>
               <td className="px-6 py-3 border-b text-gray-700">{material.unidade}</td>
-              <td className="px-6 py-3 border-b text-gray-700">R$ {material.precoUnitario.toFixed(2)}</td>
-              <td className="px-6 py-3 border-b text-gray-700">{material.fornecedor}</td>
-              <td className="px-6 py-3 border-b text-gray-700">{material.estoqueAtual}</td>
-              <td className="px-6 py-3 border-b text-gray-700">{material.estoqueMinimo}</td>
+              <td className="px-6 py-3 border-b text-gray-700">R$ {material.vlPorcao}</td>
               <td className="px-6 py-3 border-b">
                 <button
                   onClick={e => { e.stopPropagation(); onEdit(material); }}
