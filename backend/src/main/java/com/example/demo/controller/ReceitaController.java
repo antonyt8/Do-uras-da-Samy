@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/receitas")
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "https://sammy-front.onrender.com")
 public class ReceitaController {
 
     @Autowired

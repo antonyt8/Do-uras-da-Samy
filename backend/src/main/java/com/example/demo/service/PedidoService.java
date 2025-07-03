@@ -39,15 +39,11 @@ public class PedidoService {
 
     public PedidoDTO save(PedidoDTO pedidoDTO) {
         Pedido pedido = toEntity(pedidoDTO);
-        // Calcular total do pedido
+
         BigDecimal total = BigDecimal.ZERO;
         if (pedido.getItens() != null) {
             for (PedidoProduto item : pedido.getItens()) {
-//                Receita receita = item.get();
-//                if (receita != null) {
-                    // Aqui você pode calcular o valor da receita se desejar
-                    // Exemplo: total = total.add(receita.getPreco().multiply(new BigDecimal(item.getQuantidade())));
-//                }
+                total = total.add(item.getProduto().getPrecoSugerido().multiply(new BigDecimal(item.getQuantidade())));
             }
         }
         pedido.setTotal(total);
