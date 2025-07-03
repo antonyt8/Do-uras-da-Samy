@@ -154,7 +154,7 @@ export default function Home() {
     authFetch("https://sammy-back.onrender.com/api/receitas")
       .then((res) => res.json())
       .then(setReceitas);
-    authFetch("http://localhost:8080/api/produtos")
+    authFetch("https://sammy-back.onrender.com/api/produtos")
       .then(res => res.json())
       .then(setProdutos);
   }, [router]);
@@ -354,7 +354,7 @@ export default function Home() {
 
       const data = await response.json();
       console.log("Movimentação registrada com sucesso:", data);
-      authFetch("http://localhost:8080/api/produtos").then(res => res.json()).then(setProdutos);
+      authFetch("https://sammy-back.onrender.com/api/produtos").then(res => res.json()).then(setProdutos);
       alert("Movimentação registrada com sucesso!");      
     } catch (error) {
       console.error("Erro na requisição:", error);

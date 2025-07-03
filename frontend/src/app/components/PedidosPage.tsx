@@ -63,6 +63,14 @@ export default function PedidosPage() {
     }
   }, []);
 
+  function formatData(d: string | Date) {
+    return new Intl.DateTimeFormat('pt-BR', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+    }).format(new Date(d));
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -106,19 +114,13 @@ export default function PedidosPage() {
             <thead>
               <tr className="bg-[#F6E3B4] text-[#7A5C3D]">
                 <th className="px-6 py-3 border-b font-semibold text-lg">
-                  Cliente
-                </th>
-                <th className="px-6 py-3 border-b font-semibold text-lg">
                   Data
                 </th>
                 <th className="px-6 py-3 border-b font-semibold text-lg">
-                  Status
+                  Cliente
                 </th>
                 <th className="px-6 py-3 border-b font-semibold text-lg">
                   Total
-                </th>
-                <th className="px-6 py-3 border-b font-semibold text-lg">
-                  Receitas
                 </th>
                 <th className="px-6 py-3 border-b font-semibold text-lg">
                   Ações
@@ -131,27 +133,14 @@ export default function PedidosPage() {
                   key={pedido.id}
                   className={`transition-colors ${idx % 2 === 0 ? "bg-white" : "bg-[#FAF3E3]"} hover:bg-[#F7C5CC]/40`}
                 >
+                  <td className="px-6 py-3 border-b text-gray-700">
+                    {formatData(pedido.dataPedido)}
+                  </td>
                   <td className="px-6 py-3 border-b text-gray-900">
                     {pedido.nomeCliente}
                   </td>
                   <td className="px-6 py-3 border-b text-gray-700">
-                    {new Date(pedido.dataPedido).toLocaleString()}
-                  </td>
-                  <td className="px-6 py-3 border-b text-gray-700">
-                    {pedido.status}
-                  </td>
-                  <td className="px-6 py-3 border-b text-gray-700">
                     R$ {pedido.total.toFixed(2)}
-                  </td>
-                  <td className="px-6 py-3 border-b text-gray-700">
-                    {pedido.itens.map((item, idx) => (
-                      <div key={idx}>
-                        {item.receitaNome}{" "}
-                        <span className="text-gray-500">
-                          x{item.quantidade}
-                        </span>
-                      </div>
-                    ))}
                   </td>
                   <td className="px-6 py-3 border-b flex gap-2">
                     {isAuthenticated && (
