@@ -61,38 +61,6 @@ public class MaterialController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/categoria/{categoria}")
-    public ResponseEntity<List<MaterialDTO>> getMateriaisByCategoria(
-        @PathVariable String categoria
-    ) {
-        List<MaterialDTO> materiais = materialService.findByCategoria(
-            categoria
-        );
-        return ResponseEntity.ok(materiais);
-    }
-
-    @GetMapping("/estoque-baixo")
-    public ResponseEntity<List<MaterialDTO>> getMateriaisComEstoqueBaixo() {
-        List<MaterialDTO> materiais =
-            materialService.findMateriaisComEstoqueBaixo();
-        return ResponseEntity.ok(materiais);
-    }
-
-    @GetMapping("/sem-estoque")
-    public ResponseEntity<List<MaterialDTO>> getMateriaisSemEstoque() {
-        List<MaterialDTO> materiais = materialService.findMateriaisSemEstoque();
-        return ResponseEntity.ok(materiais);
-    }
-
-    @GetMapping("/buscar")
-    public ResponseEntity<List<MaterialDTO>> buscarMateriais(
-        @RequestParam String termo
-    ) {
-        List<MaterialDTO> materiais =
-            materialService.findByNomeOuDescricaoContaining(termo);
-        return ResponseEntity.ok(materiais);
-    }
-
     @GetMapping("/valor-total-estoque")
     public ResponseEntity<BigDecimal> getValorTotalEstoque() {
         BigDecimal valor = materialService.calcularValorTotalEstoque();
