@@ -141,7 +141,6 @@ export default function MaterialForm({ onSave, onCancel, material }: MaterialFor
             </div>
           </div>
 
-          {/* Novo campo: Valor da Porção */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Valor da Porção (R$) *

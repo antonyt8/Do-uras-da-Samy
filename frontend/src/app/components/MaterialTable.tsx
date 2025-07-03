@@ -6,7 +6,7 @@ interface Material {
   id: string | number;
   descricao: string;
   qtPorcao: string;
-  unidade: string;
+  unidadeMedida: string;
   vlPorcao: number
 }
 
@@ -52,7 +52,7 @@ export default function MaterialTable({ materiais, onEdit, onDelete, onView }: P
             }}>
               <td className="px-6 py-3 border-b text-gray-900">{material.descricao}</td>
               <td className="px-6 py-3 border-b text-gray-700">{material.qtPorcao}</td>
-              <td className="px-6 py-3 border-b text-gray-700">{material.unidade}</td>
+              <td className="px-6 py-3 border-b text-gray-700">{material.unidadeMedida}</td>
               <td className="px-6 py-3 border-b text-gray-700">R$ {material.vlPorcao}</td>
               <td className="px-6 py-3 border-b">
                 <button
