@@ -83,6 +83,8 @@ public class MaterialService {
         material.setId(materialDTO.id());
         material.setDescricao(materialDTO.descricao());
         material.setQtPorcao(materialDTO.qtPorcao());
+        material.setUnidadeMedida(materialDTO.unidadeMedida());
+        material.setValorPorcao(materialDTO.vlPorcao());
         return material;
     }
 } 

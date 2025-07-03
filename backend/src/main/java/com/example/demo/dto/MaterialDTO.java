@@ -8,6 +8,6 @@ public record MaterialDTO (
         Long id,
         String descricao,
         Integer qtPorcao,
-        UnidadeMedida unidade,
+        UnidadeMedida unidadeMedida,
         BigDecimal vlPorcao) {
 }

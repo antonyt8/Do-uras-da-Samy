@@ -7,6 +7,7 @@ interface Material {
   descricao: string;
   qtPorcao: string;
   unidadeMedida: string;
+  vlPorcao: number;
 }
 
 interface MaterialFormProps {
@@ -19,7 +20,8 @@ export default function MaterialForm({ onSave, onCancel, material }: MaterialFor
   const [formData, setFormData] = useState<Material>({
     descricao: "",
     unidadeMedida: "",
-    qtPorcao: ""
+    qtPorcao: "",
+    vlPorcao: 0,
   });
 
   const [success, setSuccess] = useState("");
@@ -137,6 +139,23 @@ export default function MaterialForm({ onSave, onCancel, material }: MaterialFor
                 ))}
               </select>
             </div>
+          </div>
+
+          {/* Novo campo: Valor da Porção */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Valor da Porção (R$) *
+            </label>
+            <input
+              type="number"
+              min={0}
+              step="0.01"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500"
+              value={formData.vlPorcao}
+              onChange={(e) => handleChange("vlPorcao", e.target.value)}
+              required
+              placeholder="Ex: 4.50"
+            />
           </div>
 
           {success && <div className="text-green-600 mb-2 font-semibold bg-green-50 border border-green-200 rounded p-2 text-center">{success}</div>}
